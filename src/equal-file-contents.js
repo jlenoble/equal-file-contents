@@ -1,7 +1,40 @@
-export default class EqualFileContents {
+import path from 'path';
+import gulp from 'gulp';
+import {noop} from 'gulp-util';
+import destglob from 'destglob';
+import streamToPromise from 'stream-to-promise';
+import cached from 'gulp-cached';
+import {expect} from 'chai';
 
-  constructor() {
-    console.log('Hello!');
-  }
+export function equalFileContents(glb, dest, pipe = noop) {
+  const base = process.cwd();
+  const stream1 = gulp.src(glb).pipe(pipe(), {base});
+  const stream2 = gulp.src(destglob(glb, dest, base), {base});
 
+  const cacheName = '__CACHE_' + (new Date()).getTime() + '_';
+  const cacheName1 = cacheName + 1;
+  const cacheName2 = cacheName + 2;
+
+  const p1 = streamToPromise(stream1.pipe(cached(cacheName1)))
+    .then(() => cached.caches[cacheName1]);
+  const p2 = streamToPromise(stream2.pipe(cached(cacheName2)))
+    .then(() => cached.caches[cacheName2]);
+
+  return Promise.all([p1, p2])
+    .then(caches => {
+      try {
+        const [c1, c2] = caches;
+        expect(Object.keys(c1).length).to.equal(Object.keys(c2).length);
+        for (let key of Object.keys(c1)) {
+          expect(c1[key]).to.equal(c2[path.join(base,
+            ...destglob(key, dest, base))]);
+        }
+        delete cached.caches[cacheName1];
+        delete cached.caches[cacheName2];
+      } catch (e) {
+        delete cached.caches[cacheName1];
+        delete cached.caches[cacheName2];
+        throw e;
+      }
+    });
 }
