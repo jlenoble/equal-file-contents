@@ -6,7 +6,7 @@ import streamToPromise from 'stream-to-promise';
 import cached from 'gulp-cached';
 import {expect} from 'chai';
 
-export function equalFileContents (glb, dest, pipe = noop) {
+export default function equalFileContents (glb, dest, pipe = noop) {
   const base = process.cwd();
   const stream1 = gulp.src(glb).pipe(pipe(), {base});
   const stream2 = gulp.src(destglob(glb, dest, base), {base});

@@ -1,7 +1,7 @@
 import gulp from 'gulp';
 import babel from 'gulp-babel';
 import {expect} from 'chai';
-import {equalFileContents} from '../src/equal-file-contents';
+import equalFileContents from '../src/equal-file-contents';
 import streamToPromise from 'stream-to-promise';
 import {tmpDir} from 'cleanup-wrapper';
 
