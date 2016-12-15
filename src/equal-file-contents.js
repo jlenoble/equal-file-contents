@@ -26,8 +26,9 @@ export default function equalFileContents (glb, dest, pipe = noop) {
         const [c1, c2] = caches;
         expect(Object.keys(c1).length).to.equal(Object.keys(c2).length);
         for (let key of Object.keys(c1)) {
-          expect(c1[key]).to.equal(c2[path.join(base,
-            ...destglob(key, dest, base))]);
+          const [dst] = destglob(key, dest, base);
+          expect(c1[key]).to.equal(c2[
+            path.join(base, path.relative(base, dst))]);
         }
         delete cached.caches[cacheName1];
         delete cached.caches[cacheName2];

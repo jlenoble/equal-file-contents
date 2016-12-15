@@ -25,6 +25,10 @@ describe('Testing equalFileContents', function() {
 
   });
 
+  describe(`Dest is outside the package directory tree`, function() {
+
+  });
+
   describe(`Pipe is babel()`, function() {
 
     it(`equalFileContents returns a promise that resolves on equality`,
@@ -44,6 +48,31 @@ describe('Testing equalFileContents', function() {
           expect(err.message).to.match(/expected .* to equal/);
         });
       }));
+
+  });
+
+  describe(`Dest is outside the package directory tree`, function() {
+
+    beforeEach(function () {
+      this.dest = '/tmp/equalFileContents-test_' + new Date().getTime();
+    });
+
+    it(`equalFileContents returns a promise that resolves on equality`,
+      function() {
+        return streamToPromise(gulp.src('gulp/**/*.js', {base: cwd})
+          .pipe(gulp.dest(this.dest))).then(() =>
+            equalFileContents('gulp/**/*.js', this.dest));
+      });
+
+    it(`equalFileContents returns a promise that rejects on inequality`,
+      function() {
+        return streamToPromise(gulp.src('gulp/**/*.js', {base: cwd})
+          .pipe(gulp.dest(this.dest))).then(() =>
+            equalFileContents('gulp/**/*.js', this.dest, babel))
+        .catch(err => {
+          expect(err.message).to.match(/expected .* to equal/);
+        });
+      });
 
   });
 
