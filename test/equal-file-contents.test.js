@@ -4,6 +4,8 @@ import {expect} from 'chai';
 import equalFileContents from '../src/equal-file-contents';
 import streamToPromise from 'stream-to-promise';
 import {tmpDir} from 'cleanup-wrapper';
+import mkdirp from 'mkdirp';
+import touch from 'touch';
 
 describe('Testing equalFileContents', function() {
 
@@ -22,10 +24,6 @@ describe('Testing equalFileContents', function() {
           expect(err.message).to.match(/expected .* to equal/);
         });
       });
-
-  });
-
-  describe(`Dest is outside the package directory tree`, function() {
 
   });
 
@@ -76,23 +74,34 @@ describe('Testing equalFileContents', function() {
 
   });
 
-});
-/*
-describe('Testing equalStreamContents withmore than 16 files', function() {
+  describe('Testing with more than 16 files', function() {
 
-  it(`equalStreamContents returns a promise that resolves on equality`,
-    function() {
-      return equalStreamContents(gulp.src('test/files/*'),
-        gulp.src('test/files/*'));
-    });
+    it(`equalFileContents returns a promise that resolves on equality`,
+      tmpDir('tmp', function() {
+        mkdirp.sync('tmp');
+        for (let i = 0; i < 20; i++) {
+          touch.sync('tmp/a' + i);
+        }
+        return equalFileContents('tmp/*', '.');
+      }));
 
-  it(`equalStreamContents returns a promise that rejects on inequality`,
-    function() {
-      return equalStreamContents(gulp.src('test/files/*'),
-        gulp.src(['test/files/*', '!test/files/z'])).catch(err => {
-          expect(err.toString()).to.match(/AssertionError: expected \{ Object.* to deeply equal \{ Object/);
+    it(`equalFileContents returns a promise that rejects on inequality`,
+      tmpDir(['tmp', 'tmp1'], function() {
+        mkdirp.sync('tmp');
+        mkdirp.sync('tmp1/tmp');
+        for (let i = 0; i < 20; i++) {
+          touch.sync('tmp/a' + i);
+          touch.sync('tmp1/tmp/a' + i);
+        }
+        return equalFileContents(['tmp/*', '!tmp/a0'], 'tmp1').catch(err => {
+          try {
+            expect(err.toString()).to.match(/AssertionError: expected \{ Object.* to deeply equal \{ Object/);
+          } catch (e) {
+            throw err;
+          }
         });
+      }));
+
     });
 
 });
-*/

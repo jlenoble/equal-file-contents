@@ -37,11 +37,12 @@
     "gulp-plumber": "^1.1.0",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.6.0",
-    "plumb-gulp": "^0.1.0"
+    "plumb-gulp": "^0.1.0",
+    "touch": "^1.0.0"
   },
   "dependencies": {
     "chai": "^3.5.0",
-    "destglob": "^0.1.0",
+    "destglob": "^0.1.2",
     "gulp": "git://github.com/gulpjs/gulp.git#4.0",
     "gulp-cached": "^1.1.1",
     "stream-to-promise": "^2.2.0"
