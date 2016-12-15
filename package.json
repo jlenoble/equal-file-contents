@@ -1,0 +1,45 @@
+{
+  "name": "equal-file-contents",
+  "version": "0.0.0",
+  "description": "Helps comparing a processed glob to sources on disc",
+  "main": "lib/equal-file-contents.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jlenoble/equal-file-contents.git"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Jason Lenoble",
+    "email": "jason.lenoble@gmail.com"
+  },
+  "contributors": [],
+  "license": "MIT",
+  "engines": {
+    "node": ">=6.3.0"
+  },
+  "bugs": {
+    "url": "https://github.com/jlenoble/equal-file-contents/issues"
+  },
+  "homepage": "https://github.com/jlenoble/equal-file-contents#readme",
+  "devDependencies": {
+    "autoreload-gulp": "^0.1.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.9.0",
+    "chai": "^3.5.0",
+    "del": "^2.2.1",
+    "eslint-config-google": "^0.7.0",
+    "gulp": "git://github.com/gulpjs/gulp.git#4.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-eslint": "^3.0.1",
+    "gulp-mocha": "^2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "muter": "^0.5.0",
+    "plumb-gulp": "^0.1.0"
+  },
+  "dependencies": {}
+}

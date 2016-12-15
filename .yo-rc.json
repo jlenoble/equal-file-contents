@@ -1,0 +1,13 @@
+{
+  "generator-wupjs": {
+    "module": "equal-file-contents",
+    "description": "Helps comparing a processed glob to sources on disc",
+    "author": "Jason Lenoble",
+    "email": "jason.lenoble@gmail.com",
+    "github": "jlenoble",
+    "license": "MIT",
+    "transpile": "es2015",
+    "addons": [],
+    "Class": "EqualFileContents"
+  }
+}
