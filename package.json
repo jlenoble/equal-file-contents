@@ -1,6 +1,6 @@
 {
   "name": "equal-file-contents",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Helps comparing a processed glob to sources on disc",
   "main": "lib/equal-file-contents.js",
   "scripts": {
