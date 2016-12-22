@@ -1,5 +1,6 @@
 import gulp from 'gulp';
 import babel from 'gulp-babel';
+import path from 'path';
 import {expect} from 'chai';
 import equalFileContents from '../src/equal-file-contents';
 import streamToPromise from 'stream-to-promise';
@@ -71,6 +72,27 @@ describe('Testing equalFileContents', function() {
           expect(err.message).to.match(/expected .* to equal/);
         });
       });
+
+  });
+
+  describe(`Dest is deeper inside the package directory tree`, function() {
+
+    const base = 'build_' + new Date().getTime();
+
+    beforeEach(function () {
+      this.src = path.join(base, 'src');
+      this.dest = path.join(base, 'build');
+    });
+
+    it(`equalFileContents returns a promise that resolves on equality`,
+      tmpDir(base, function() {
+        return streamToPromise(gulp.src('src/**/*.js', {base: cwd})
+          .pipe(gulp.dest(base)))
+          .then(() => streamToPromise(gulp.src(path.join(this.src, '**/*.js'),
+            {base}).pipe(gulp.dest(this.dest))))
+          .then(() => equalFileContents(path.join(this.src, '**/*.js'),
+            this.dest, undefined, base));
+      }));
 
   });
 

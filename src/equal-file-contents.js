@@ -6,8 +6,8 @@ import streamToPromise from 'stream-to-promise';
 import cached from 'gulp-cached';
 import {expect} from 'chai';
 
-export default function equalFileContents (glb, dest, pipe = noop) {
-  const base = process.cwd();
+export default function equalFileContents (glb, dest, pipe = noop,
+  base = process.cwd()) {
   const stream1 = gulp.src(glb).pipe(pipe(), {base});
   const stream2 = gulp.src(destglob(glb, dest, base), {base});
 
@@ -28,7 +28,7 @@ export default function equalFileContents (glb, dest, pipe = noop) {
         for (let key of Object.keys(c1)) {
           const [dst] = destglob(key, dest, base);
           expect(c1[key]).to.equal(c2[
-            path.join(base, path.relative(base, dst))]);
+            path.join(path.resolve(base), path.relative(base, dst))]);
         }
         delete cached.caches[cacheName1];
         delete cached.caches[cacheName2];
