@@ -6,12 +6,14 @@ import streamToPromise from 'stream-to-promise';
 import cached from 'gulp-cached';
 import {expect} from 'chai';
 
+let counter = 0;
+
 export default function equalFileContents (glb, dest, pipe = noop,
   base = process.cwd()) {
   const stream1 = gulp.src(glb).pipe(pipe(), {base});
   const stream2 = gulp.src(destglob(glb, dest, base), {base});
 
-  const cacheName = '__CACHE_' + (new Date()).getTime() + '_';
+  const cacheName = '__CACHE_' + (counter++) + '_';
   const cacheName1 = cacheName + 1;
   const cacheName2 = cacheName + 2;
 
