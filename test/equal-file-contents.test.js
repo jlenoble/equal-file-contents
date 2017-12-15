@@ -30,18 +30,18 @@ describe('Testing equalFileContents', function () {
       tmpDir('tmp', function () {
         return streamToPromise(gulp.src('gulp/**/*.js', {base: cwd})
           .pipe(babel())
-          .pipe(gulp.dest('tmp'))).then(() =>
-            equalFileContents('gulp/**/*.js', 'tmp', babel));
+          .pipe(gulp.dest('tmp')))
+          .then(() => equalFileContents('gulp/**/*.js', 'tmp', babel));
       }));
 
     it(`equalFileContents returns a promise that rejects on inequality`,
       tmpDir('tmp', function () {
         return streamToPromise(gulp.src('gulp/**/*.js', {base: cwd})
-          .pipe(gulp.dest('tmp'))).then(() =>
-            equalFileContents('gulp/**/*.js', 'tmp', babel))
-        .catch(err => {
-          expect(err.message).to.match(/expected .* to equal/);
-        });
+          .pipe(gulp.dest('tmp')))
+          .then(() => equalFileContents('gulp/**/*.js', 'tmp', babel))
+          .catch(err => {
+            expect(err.message).to.match(/expected .* to equal/);
+          });
       }));
   });
 
@@ -54,17 +54,17 @@ describe('Testing equalFileContents', function () {
       function () {
         return streamToPromise(gulp.src('gulp/**/*.js', {base: cwd})
           .pipe(gulp.dest(this.dest))).then(() =>
-            equalFileContents('gulp/**/*.js', this.dest));
+          equalFileContents('gulp/**/*.js', this.dest));
       });
 
     it(`equalFileContents returns a promise that rejects on inequality`,
       function () {
         return streamToPromise(gulp.src('gulp/**/*.js', {base: cwd})
-          .pipe(gulp.dest(this.dest))).then(() =>
-            equalFileContents('gulp/**/*.js', this.dest, babel))
-        .catch(err => {
-          expect(err.message).to.match(/expected .* to equal/);
-        });
+          .pipe(gulp.dest(this.dest)))
+          .then(() => equalFileContents('gulp/**/*.js', this.dest, babel))
+          .catch(err => {
+            expect(err.message).to.match(/expected .* to equal/);
+          });
       });
   });
 
@@ -98,20 +98,20 @@ describe('Testing equalFileContents', function () {
       }));
 
     it(`equalFileContents returns a promise that rejects on inequality`,
-    tmpDir(['tmp', 'tmp1'], function () {
-      mkdirp.sync('tmp');
-      mkdirp.sync('tmp1/tmp');
-      for (let i = 0; i < 20; i++) {
-        touch.sync('tmp/a' + i);
-        touch.sync('tmp1/tmp/a' + i);
-      }
-      return equalFileContents(['tmp/*', '!tmp/a0'], 'tmp1').catch(err => {
-        try {
-          expect(err.toString()).to.match(/AssertionError: expected \{ Object.* to deeply equal \{ Object/);
-        } catch (e) {
-          throw err;
+      tmpDir(['tmp', 'tmp1'], function () {
+        mkdirp.sync('tmp');
+        mkdirp.sync('tmp1/tmp');
+        for (let i = 0; i < 20; i++) {
+          touch.sync('tmp/a' + i);
+          touch.sync('tmp1/tmp/a' + i);
         }
-      });
-    }));
+        return equalFileContents(['tmp/*', '!tmp/a0'], 'tmp1').catch(err => {
+          try {
+            expect(err.toString()).to.match(/AssertionError: expected \{ Object.* to deeply equal \{ Object/);
+          } catch (e) {
+            throw err;
+          }
+        });
+      }));
   });
 });
