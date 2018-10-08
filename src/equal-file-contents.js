@@ -1,6 +1,6 @@
 import path from 'path';
 import gulp from 'gulp';
-import {noop} from 'gulp-util';
+import through from 'through2';
 import destglob from 'destglob';
 import streamToPromise from 'stream-to-promise';
 import cached from 'gulp-cached';
@@ -8,6 +8,10 @@ import {expect} from 'chai';
 import {error} from 'explanation';
 
 let counter = 0;
+
+function noop () {
+  return through.obj();
+}
 
 export default function equalFileContents (glb, dest, pipe = noop,
   base = process.cwd()) {
