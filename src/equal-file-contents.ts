@@ -98,6 +98,8 @@ export default async function equalFileContents(
     throw err;
   };
 
+  let res = true;
+
   try {
     await Promise.all([
       streamToPromise(stream1.pipe(cached(cacheName1))),
@@ -108,7 +110,7 @@ export default async function equalFileContents(
     const c2: Cache = cached.caches[cacheName2];
 
     if (Object.keys(c1).length !== Object.keys(c2).length) {
-      return false;
+      res = false;
     }
 
     for (const key of Object.keys(c1)) {
@@ -116,7 +118,8 @@ export default async function equalFileContents(
       if (
         c1[key] !== c2[path.join(path.resolve(base), path.relative(base, dst))]
       ) {
-        return false;
+        res = false;
+        break;
       }
     }
 
@@ -125,5 +128,5 @@ export default async function equalFileContents(
     clearCachesAndThrow(e);
   }
 
-  return true;
+  return res;
 }
