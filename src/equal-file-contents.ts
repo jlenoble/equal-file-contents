@@ -13,12 +13,12 @@ function noop() {
   return through.obj();
 }
 
-export default function equalFileContents(
+export default async function equalFileContents(
   glb,
   dest,
   pipe = noop,
   base = process.cwd()
-) {
+): Promise<boolean> {
   const stream1 = gulp.src(glb).pipe(
     pipe(),
     { base }
@@ -29,7 +29,7 @@ export default function equalFileContents(
   const cacheName1 = cacheName + 1;
   const cacheName2 = cacheName + 2;
 
-  const clearCaches = () => {
+  const clearCaches = (): void => {
     if (cached.caches[cacheName1]) {
       delete cached.caches[cacheName1];
     }
@@ -66,36 +66,33 @@ export default function equalFileContents(
     });
   }
 
-  const clearCachesAndThrow = err => {
+  const clearCachesAndThrow = (err: Error): void => {
     clearCaches();
     throw err;
   };
 
-  const p1 = streamToPromise(stream1.pipe(cached(cacheName1))).then(
-    () => cached.caches[cacheName1],
-    clearCachesAndThrow
-  );
-  const p2 = streamToPromise(stream2.pipe(cached(cacheName2))).then(
-    () => cached.caches[cacheName2],
-    clearCachesAndThrow
-  );
+  try {
+    await Promise.all([
+      streamToPromise(stream1.pipe(cached(cacheName1))),
+      streamToPromise(stream2.pipe(cached(cacheName2)))
+    ]);
 
-  return Promise.all([p1, p2]).then(caches => {
-    try {
-      const [c1, c2] = caches;
+    const c1 = cached.caches[cacheName1];
+    const c2 = cached.caches[cacheName2];
 
-      expect(Object.keys(c1).length).to.equal(Object.keys(c2).length);
+    expect(Object.keys(c1).length).to.equal(Object.keys(c2).length);
 
-      for (const key of Object.keys(c1)) {
-        const [dst] = destglob(key, dest, base);
-        expect(c1[key]).to.equal(
-          c2[path.join(path.resolve(base), path.relative(base, dst))]
-        );
-      }
-
-      clearCaches();
-    } catch (e) {
-      clearCachesAndThrow(e);
+    for (const key of Object.keys(c1)) {
+      const [dst] = destglob(key, dest, base);
+      expect(c1[key]).to.equal(
+        c2[path.join(path.resolve(base), path.relative(base, dst))]
+      );
     }
-  });
+
+    clearCaches();
+  } catch (e) {
+    clearCachesAndThrow(e);
+  }
+
+  return true;
 }
