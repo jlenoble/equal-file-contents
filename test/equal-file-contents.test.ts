@@ -96,7 +96,7 @@ describe("Testing equalFileContents", (): void => {
     const base = "build_" + new Date().getTime();
 
     beforeEach(function(): void {
-      this.src = path.join(base, "src");
+      this.src = path.join(base, "gulp");
       this.dest = path.join(base, "build");
     });
 
@@ -107,7 +107,7 @@ describe("Testing equalFileContents", (): void => {
         const { src, dest }: { src: string; dest: string } = this;
 
         await streamToPromise(
-          gulp.src("src/**/*.js", { base: cwd }).pipe(gulp.dest(base))
+          gulp.src("gulp/**/*.js", { base: cwd }).pipe(gulp.dest(base))
         );
 
         await streamToPromise(
