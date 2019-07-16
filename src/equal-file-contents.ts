@@ -14,6 +14,7 @@ interface Cache {
 interface Options {
   pipe?: () => Transform | NodeJS.ReadWriteStream;
   base?: string;
+  matchGlob?: boolean;
   noCacheLimit?: boolean;
 }
 
@@ -26,10 +27,30 @@ function noop(): Transform {
 export default async function equalFileContents(
   glb: string | string[],
   dest: string,
-  { pipe = noop, base = process.cwd(), noCacheLimit = false }: Options = {}
+  {
+    pipe = noop,
+    base = process.cwd(),
+    matchGlob = false,
+    noCacheLimit = false
+  }: Options = {}
 ): Promise<boolean> {
   const stream1 = gulp.src(glb, { base }).pipe(pipe());
-  const stream2 = gulp.src(destglob(glb, dest, base), { base });
+
+  let glob: string | string[];
+
+  if (matchGlob) {
+    glob = destglob(glb, dest, base);
+  } else {
+    const glb2 = (Array.isArray(glb) ? glb : [glb])
+      .filter((str): boolean => !str.match(/^!/))
+      .map((str): string =>
+        path.join(path.dirname(str), "**/*").replace("**/**", "**")
+      );
+
+    glob = destglob(glb2, dest, base);
+  }
+
+  const stream2 = gulp.src(glob, { base });
 
   const cacheName = "__CACHE_EFC" + counter++ + "_";
   const cacheName1 = cacheName + 1;

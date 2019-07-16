@@ -14,29 +14,25 @@ describe("Testing equalFileContents", (): void => {
   const cwd = process.cwd();
 
   describe(`Pipe is noop()`, (): void => {
-    it(`equalFileContents returns a promise that resolves on equality`, (): Promise<
-      boolean
-    > => {
-      return equalFileContents("gulp/**/*.js", ".");
-    });
-
-    it(`equalFileContents returns a promise that rejects on inequality`, async (): Promise<
+    it(`equalFileContents returns a promise that resolves true on equality`, async (): Promise<
       void
     > => {
-      try {
-        await equalFileContents("gulp/**/*.js", "src");
-      } catch (err) {
-        expect(err.message).to.match(/expected .* to equal/);
-      }
+      expect(await equalFileContents("gulp/**/*.js", ".")).to.be.true;
+    });
+
+    it(`equalFileContents returns a promise that resolves false on inequality`, async (): Promise<
+      void
+    > => {
+      expect(await equalFileContents("gulp/**/*.js", "src")).to.be.false;
     });
   });
 
   describe(`Pipe is babel()`, (): void => {
     it(
-      `equalFileContents returns a promise that resolves on equality`,
+      `equalFileContents returns a promise that resolves true on equality`,
       tmpDir(
         "tmp",
-        async (): Promise<boolean> => {
+        async (): Promise<void> => {
           await streamToPromise(
             gulp
               .src("gulp/**/*.js", { base: cwd })
@@ -44,13 +40,15 @@ describe("Testing equalFileContents", (): void => {
               .pipe(gulp.dest("tmp"))
           );
 
-          return equalFileContents("gulp/**/*.js", "tmp", { pipe: babel });
+          expect(
+            await equalFileContents("gulp/**/*.js", "tmp", { pipe: babel })
+          ).to.be.true;
         }
       )
     );
 
     it(
-      `equalFileContents returns a promise that rejects on inequality`,
+      `equalFileContents returns a promise that resolves false on inequality`,
       tmpDir(
         "tmp",
         async (): Promise<void> => {
@@ -58,11 +56,9 @@ describe("Testing equalFileContents", (): void => {
             gulp.src("gulp/**/*.js", { base: cwd }).pipe(gulp.dest("tmp"))
           );
 
-          try {
-            await equalFileContents("gulp/**/*.js", "tmp", { pipe: babel });
-          } catch (err) {
-            expect(err.message).to.match(/expected .* to equal/);
-          }
+          expect(
+            await equalFileContents("gulp/**/*.js", "tmp", { pipe: babel })
+          ).to.be.false;
         }
       )
     );
@@ -73,28 +69,26 @@ describe("Testing equalFileContents", (): void => {
       this.dest = "/tmp/equalFileContents-test_" + new Date().getTime();
     });
 
-    it(`equalFileContents returns a promise that resolves on equality`, async function(): Promise<
-      boolean
-    > {
-      await streamToPromise(
-        gulp.src("gulp/**/*.js", { base: cwd }).pipe(gulp.dest(this.dest))
-      );
-
-      return equalFileContents("gulp/**/*.js", this.dest);
-    });
-
-    it(`equalFileContents returns a promise that rejects on inequality`, async function(): Promise<
+    it(`equalFileContents returns a promise that resolves true on equality`, async function(): Promise<
       void
     > {
       await streamToPromise(
         gulp.src("gulp/**/*.js", { base: cwd }).pipe(gulp.dest(this.dest))
       );
 
-      try {
-        await equalFileContents("gulp/**/*.js", this.dest, { pipe: babel });
-      } catch (err) {
-        expect(err.message).to.match(/expected .* to equal/);
-      }
+      expect(await equalFileContents("gulp/**/*.js", this.dest)).to.be.true;
+    });
+
+    it(`equalFileContents returns a promise that resolves false on inequality`, async function(): Promise<
+      void
+    > {
+      await streamToPromise(
+        gulp.src("gulp/**/*.js", { base: cwd }).pipe(gulp.dest(this.dest))
+      );
+
+      expect(
+        await equalFileContents("gulp/**/*.js", this.dest, { pipe: babel })
+      ).to.be.false;
     });
   });
 
@@ -107,7 +101,7 @@ describe("Testing equalFileContents", (): void => {
     });
 
     it(
-      `equalFileContents returns a promise that resolves on equality`,
+      `equalFileContents returns a promise that resolves true on equality`,
       tmpDir(base, async function(): Promise<void> {
         // @ts-ignore
         const { src, dest }: { src: string; dest: string } = this;
@@ -120,28 +114,30 @@ describe("Testing equalFileContents", (): void => {
           gulp.src(path.join(src, "**/*.js"), { base }).pipe(gulp.dest(dest))
         );
 
-        await equalFileContents(path.join(src, "**/*.js"), dest, { base });
+        expect(
+          await equalFileContents(path.join(src, "**/*.js"), dest, { base })
+        ).to.be.true;
       })
     );
   });
 
   describe("Testing with more than 16 files", (): void => {
     it(
-      `equalFileContents returns a promise that resolves on equality`,
+      `equalFileContents returns a promise that resolves true on equality`,
       tmpDir(
         "tmp",
-        (): Promise<boolean> => {
+        async (): Promise<void> => {
           mkdirp.sync("tmp");
           for (let i = 0; i < 20; i++) {
             touch.sync("tmp/a" + i);
           }
-          return equalFileContents("tmp/*", ".");
+          expect(await equalFileContents("tmp/*", ".")).to.be.true;
         }
       )
     );
 
     it(
-      `equalFileContents returns a promise that rejects on inequality`,
+      `suppressing one file with matchGlob === true`,
       tmpDir(
         ["tmp", "tmp1"],
         async (): Promise<void> => {
@@ -153,17 +149,33 @@ describe("Testing equalFileContents", (): void => {
             touch.sync("tmp1/tmp/a" + i);
           }
 
-          try {
-            await equalFileContents(["tmp/*", "!tmp/a0"], "tmp1");
-          } catch (err) {
-            try {
-              expect(err.toString()).to.match(
-                /AssertionError: expected \{ Object.* to deeply equal \{ Object/
-              );
-            } catch (e) {
-              throw err;
-            }
+          expect(
+            await equalFileContents(["tmp/*", "!tmp/a0"], "tmp1", {
+              matchGlob: true
+            })
+          ).to.be.true;
+        }
+      )
+    );
+
+    it(
+      `suppressing one file with matchGlob === false`,
+      tmpDir(
+        ["tmp", "tmp1"],
+        async (): Promise<void> => {
+          mkdirp.sync("tmp");
+          mkdirp.sync("tmp1/tmp");
+
+          for (let i = 0; i < 20; i++) {
+            touch.sync("tmp/a" + i);
+            touch.sync("tmp1/tmp/a" + i);
           }
+
+          expect(
+            await equalFileContents(["tmp/*", "!tmp/a0"], "tmp1", {
+              matchGlob: false
+            })
+          ).to.be.false;
         }
       )
     );
