@@ -1,16 +1,32 @@
 {
   "generator-wupjs": {
-    "module": "equal-file-contents",
-    "description": "Helps comparing a processed glob to sources on disc",
-    "author": "Jason Lenoble",
-    "email": "jason.lenoble@gmail.com",
-    "github": "jlenoble",
-    "license": "MIT",
-    "transpile": "es2015",
-    "addons": [],
-    "Class": "EqualFileContents",
-    "updated": 2017,
-    "created": 2016,
-    "year": "2016-2017"
+    "createdWith": "0.2.2",
+    "modifiedWith": "0.6.0-5",
+    "createdOn": "2016-12-15T00:07:09.689Z",
+    "modifiedOn": "2019-07-16T07:37:32.799Z",
+    "gulp": true,
+    "srcDir": "src",
+    "testDir": "test",
+    "buildDir": "build",
+    "docDir": "docs",
+    "libDir": "lib",
+    "gulpDir": "gulp",
+    "typescript": true,
+    "jsx": false,
+    "extensions": [
+      "ts",
+      "js"
+    ],
+    "jupyter": false,
+    "antlr4": false,
+    "server": true,
+    "client": false,
+    "devModuleTypes": [
+      "ES6"
+    ],
+    "prodModuleTypes": [
+      "CommonJS"
+    ],
+    "monorepo": false
   }
 }

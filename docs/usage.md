@@ -1,13 +1,4 @@
-# equal-file-contents
-
-Helps comparing a processed glob to sources on disc
-
-  * [Usage](#usage)
-    * [Example](#example)
-  * [License](#license)
-
-
-## Usage
+## Usage !heading
 
 ### `equalFileContents(glob, dest, plugin)`
 
@@ -15,7 +6,7 @@ Takes a valid glob, a valid destination (string) and optionally a function retur
 
 Unlike with a tool like [gulp-diff](https://www.npmjs.com/package/gulp-diff), more files in target directory are therefore not allowed. The comparison is exact.
 
-### Example
+### Example !heading
 
 ```js
 import gulp from 'gulp';
@@ -31,11 +22,3 @@ streamToPromise(
   return equalFileContents('src/*.js', 'build', babel); // promise is resolved
 })
 ```
-
-
-## License
-
-equal-file-contents is [MIT licensed](./LICENSE).
-
-© 2016-2019 [Jason Lenoble](mailto:jason.lenoble@gmail.com)
-
