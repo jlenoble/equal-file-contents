@@ -44,7 +44,7 @@ describe("Testing equalFileContents", (): void => {
               .pipe(gulp.dest("tmp"))
           );
 
-          return equalFileContents("gulp/**/*.js", "tmp", babel);
+          return equalFileContents("gulp/**/*.js", "tmp", { pipe: babel });
         }
       )
     );
@@ -59,7 +59,7 @@ describe("Testing equalFileContents", (): void => {
           );
 
           try {
-            await equalFileContents("gulp/**/*.js", "tmp", babel);
+            await equalFileContents("gulp/**/*.js", "tmp", { pipe: babel });
           } catch (err) {
             expect(err.message).to.match(/expected .* to equal/);
           }
@@ -91,7 +91,7 @@ describe("Testing equalFileContents", (): void => {
       );
 
       try {
-        await equalFileContents("gulp/**/*.js", this.dest, babel);
+        await equalFileContents("gulp/**/*.js", this.dest, { pipe: babel });
       } catch (err) {
         expect(err.message).to.match(/expected .* to equal/);
       }
@@ -120,12 +120,7 @@ describe("Testing equalFileContents", (): void => {
           gulp.src(path.join(src, "**/*.js"), { base }).pipe(gulp.dest(dest))
         );
 
-        await equalFileContents(
-          path.join(src, "**/*.js"),
-          dest,
-          undefined,
-          base
-        );
+        await equalFileContents(path.join(src, "**/*.js"), dest, { base });
       })
     );
   });

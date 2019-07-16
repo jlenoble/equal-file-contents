@@ -7,6 +7,10 @@ import cached from "gulp-cached";
 import { expect } from "chai";
 import { error } from "explanation";
 
+interface Cache {
+  [key: string]: string;
+}
+
 let counter = 0;
 
 function noop() {
@@ -14,15 +18,11 @@ function noop() {
 }
 
 export default async function equalFileContents(
-  glb,
-  dest,
-  pipe = noop,
-  base = process.cwd()
+  glb: string | string[],
+  dest: string,
+  { pipe = noop, base = process.cwd(), noCacheLimit = false } = {}
 ): Promise<boolean> {
-  const stream1 = gulp.src(glb).pipe(
-    pipe(),
-    { base }
-  );
+  const stream1 = gulp.src(glb, { base }).pipe(pipe());
   const stream2 = gulp.src(destglob(glb, dest, base), { base });
 
   const cacheName = "__CACHE_EFC" + counter++ + "_";
@@ -51,7 +51,7 @@ export default async function equalFileContents(
     });
   }
 
-  if (nCaches > 30 && !equalFileContents.noCacheLimit) {
+  if (nCaches > 30 && !noCacheLimit) {
     error({
       message: "Too many gulp-cached caches",
       explain: [
@@ -77,8 +77,8 @@ export default async function equalFileContents(
       streamToPromise(stream2.pipe(cached(cacheName2)))
     ]);
 
-    const c1 = cached.caches[cacheName1];
-    const c2 = cached.caches[cacheName2];
+    const c1: Cache = cached.caches[cacheName1];
+    const c2: Cache = cached.caches[cacheName2];
 
     expect(Object.keys(c1).length).to.equal(Object.keys(c2).length);
 
