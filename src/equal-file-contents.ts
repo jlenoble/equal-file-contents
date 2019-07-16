@@ -1,6 +1,7 @@
 import path from "path";
 import gulp from "gulp";
 import through from "through2";
+import { Transform } from "stream";
 import destglob from "destglob";
 import streamToPromise from "stream-to-promise";
 import cached from "gulp-cached";
@@ -13,7 +14,7 @@ interface Cache {
 
 let counter = 0;
 
-function noop() {
+function noop(): Transform {
   return through.obj();
 }
 
