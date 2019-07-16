@@ -85,10 +85,10 @@ export default async function equalFileContents(
         ["Number of current caches:", nCaches],
         ["Names:", cacheNames],
         [
-          "If you are fine with that, add in your code:",
-          "equalFileContents.noCacheLimit = true"
+          "If you are fine with that, use:",
+          "equalFileContents(..., { noCacheLimit: true })"
         ],
-        "You may also want to check this package is properly deduped"
+        "You may also want to check whether this package is properly deduped"
       ]
     });
   }
