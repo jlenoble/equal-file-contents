@@ -5,11 +5,16 @@ import { Transform } from "stream";
 import destglob from "destglob";
 import streamToPromise from "stream-to-promise";
 import cached from "gulp-cached";
-import { expect } from "chai";
 import { error } from "explanation";
 
 interface Cache {
   [key: string]: string;
+}
+
+interface Options {
+  pipe?: () => Transform | NodeJS.ReadWriteStream;
+  base?: string;
+  noCacheLimit?: boolean;
 }
 
 let counter = 0;
@@ -21,7 +26,7 @@ function noop(): Transform {
 export default async function equalFileContents(
   glb: string | string[],
   dest: string,
-  { pipe = noop, base = process.cwd(), noCacheLimit = false } = {}
+  { pipe = noop, base = process.cwd(), noCacheLimit = false }: Options = {}
 ): Promise<boolean> {
   const stream1 = gulp.src(glb, { base }).pipe(pipe());
   const stream2 = gulp.src(destglob(glb, dest, base), { base });
@@ -81,13 +86,17 @@ export default async function equalFileContents(
     const c1: Cache = cached.caches[cacheName1];
     const c2: Cache = cached.caches[cacheName2];
 
-    expect(Object.keys(c1).length).to.equal(Object.keys(c2).length);
+    if (Object.keys(c1).length !== Object.keys(c2).length) {
+      return false;
+    }
 
     for (const key of Object.keys(c1)) {
       const [dst] = destglob(key, dest, base);
-      expect(c1[key]).to.equal(
-        c2[path.join(path.resolve(base), path.relative(base, dst))]
-      );
+      if (
+        c1[key] !== c2[path.join(path.resolve(base), path.relative(base, dst))]
+      ) {
+        return false;
+      }
     }
 
     clearCaches();
