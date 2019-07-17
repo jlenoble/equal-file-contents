@@ -180,4 +180,77 @@ describe("Testing equalFileContents", (): void => {
       )
     );
   });
+
+  describe("Dealing with bad globs", (): void => {
+    it(
+      "Missing file badfile.js",
+      tmpDir(
+        "tmp",
+        async (): Promise<void> => {
+          await streamToPromise(
+            gulp
+              .src("gulp/**/*.js", { base: cwd })
+              .pipe(babel())
+              .pipe(gulp.dest("tmp"))
+          );
+
+          expect(
+            await equalFileContents("gulp/badfile.js", "tmp", { pipe: babel })
+          ).to.be.false;
+
+          expect(
+            await equalFileContents(["badfile.js", "gulp/*.js"], "tmp", {
+              pipe: babel
+            })
+          ).to.be.false;
+        }
+      )
+    );
+
+    it(
+      "Unresolving glob baddir/*.js",
+      tmpDir(
+        "tmp",
+        async (): Promise<void> => {
+          await streamToPromise(
+            gulp
+              .src("gulp/**/*.js", { base: cwd })
+              .pipe(babel())
+              .pipe(gulp.dest("tmp"))
+          );
+
+          expect(
+            await equalFileContents(["baddir/*.js"], "tmp", { pipe: babel })
+          ).to.be.false;
+
+          expect(
+            await equalFileContents(["baddir/*.js", "gulp/*.js"], "tmp", {
+              pipe: babel
+            })
+          ).to.be.true;
+        }
+      )
+    );
+
+    it(
+      "Empty glob []",
+      tmpDir(
+        "tmp",
+        async (): Promise<void> => {
+          await streamToPromise(
+            gulp
+              .src("gulp/**/*.js", { base: cwd })
+              .pipe(babel())
+              .pipe(gulp.dest("tmp"))
+          );
+
+          try {
+            await equalFileContents([], "tmp", { pipe: babel });
+          } catch (e) {
+            expect(e.message).to.match(/Invalid glob argument/);
+          }
+        }
+      )
+    );
+  });
 });

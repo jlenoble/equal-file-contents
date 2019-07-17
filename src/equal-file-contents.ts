@@ -34,7 +34,7 @@ export default async function equalFileContents(
     noCacheLimit = false
   }: Options = {}
 ): Promise<boolean> {
-  const stream1 = gulp.src(glb, { base }).pipe(pipe());
+  const stream1 = gulp.src(glb, { base, allowEmpty: true }).pipe(pipe());
 
   let glob: string | string[];
 
@@ -50,7 +50,7 @@ export default async function equalFileContents(
     glob = destglob(glb2, dest, base);
   }
 
-  const stream2 = gulp.src(glob, { base });
+  const stream2 = gulp.src(glob, { base, allowEmpty: true });
 
   const cacheName = "__CACHE_EFC" + counter++ + "_";
   const cacheName1 = cacheName + 1;
@@ -109,17 +109,22 @@ export default async function equalFileContents(
     const c1: Cache = cached.caches[cacheName1];
     const c2: Cache = cached.caches[cacheName2];
 
-    if (Object.keys(c1).length !== Object.keys(c2).length) {
+    const k1 = Object.keys(c1);
+
+    if (!k1.length || k1.length !== Object.keys(c2).length) {
       res = false;
     }
 
-    for (const key of Object.keys(c1)) {
-      const [dst] = destglob(key, dest, base);
-      if (
-        c1[key] !== c2[path.join(path.resolve(base), path.relative(base, dst))]
-      ) {
-        res = false;
-        break;
+    if (res) {
+      for (const key of k1) {
+        const [dst] = destglob(key, dest, base);
+        if (
+          c1[key] !==
+          c2[path.join(path.resolve(base), path.relative(base, dst))]
+        ) {
+          res = false;
+          break;
+        }
       }
     }
 
