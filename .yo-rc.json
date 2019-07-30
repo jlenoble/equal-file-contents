@@ -3,7 +3,7 @@
     "createdWith": "0.2.2",
     "modifiedWith": "0.6.0-5",
     "createdOn": "2016-12-15T00:07:09.689Z",
-    "modifiedOn": "2019-07-16T07:37:32.799Z",
+    "modifiedOn": "2019-07-30T15:40:52.948Z",
     "gulp": true,
     "srcDir": "src",
     "testDir": "test",
@@ -27,6 +27,7 @@
     "prodModuleTypes": [
       "CommonJS"
     ],
-    "monorepo": false
+    "monorepo": false,
+    "hasGulpfilesDir": false
   }
 }
